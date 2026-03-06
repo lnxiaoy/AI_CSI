@@ -7,7 +7,9 @@ import os
 
 # 🔥 修复点：直接从具体的文件中导入，不管 __init__.py 是什么状态都不会报错了
 #from src.model import CsiNetLSTM
-from src.model_2DConv import iCsiNet2D
+# from src.model_2DConv import iCsiNet2D
+from src.model_doppler import iCsiNet2D_Doppler
+
 from src.utils import load_temporal_data, get_dataloader
 
 # ================= 配置区域 =================
@@ -137,7 +139,8 @@ def train():
     print(f"🏗️ [Step 2] 初始化 Medium CsiNet-LSTM 模型...")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     #model = CsiNetLSTM(input_channels=128, seq_len=72, hidden_dim=HIDDEN_DIM, lstm_layers=LSTM_LAYERS).to(device)
-    model = iCsiNet2D().to(device)
+    # model = iCsiNet2D().to(device)
+    model = iCsiNet2D_Doppler().to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=LR, weight_decay=1e-4)
     scheduler = CosineAnnealingLR(optimizer, T_max=EPOCHS)
@@ -169,7 +172,7 @@ def train():
         print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {avg_loss:.6f}")
         
     print("✅ 训练完成！")
-    torch.save(model.state_dict(), "csi_lstm_model.pth")
+    torch.save(model.state_dict(), "best_model_doppler.pth")
     print("💾 模型已保存")
 
 if __name__ == "__main__":
